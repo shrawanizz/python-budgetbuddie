@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}BudgetBuddie - Monthly Analysis{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='add_expense_style.css') }}">
+<style>
+    .summary-card {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .chart-container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .chart-image {
+        width: 100%;
+        max-width: 700px;
+        height: auto;
+        margin: 0 auto;
+        display: block;
+    }
+    .form-container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Monthly Expense Analysis</h2>
+    
+    <!-- Month selector form -->
+    <div class="form-container">
+        <form method="POST" class="row g-3">
+            <div class="col-md-5">
+                <label for="month" class="form-label">Month</label>
+                <select class="form-select" id="month" name="month">
+                    <option value="1" {% if selected_month == 1 %}selected{% endif %}>January</option>
+                    <option value="2" {% if selected_month == 2 %}selected{% endif %}>February</option>
+                    <option value="3" {% if selected_month == 3 %}selected{% endif %}>March</option>
+                    <option value="4" {% if selected_month == 4 %}selected{% endif %}>April</option>
+                    <option value="5" {% if selected_month == 5 %}selected{% endif %}>May</option>
+                    <option value="6" {% if selected_month == 6 %}selected{% endif %}>June</option>
+                    <option value="7" {% if selected_month == 7 %}selected{% endif %}>July</option>
+                    <option value="8" {% if selected_month == 8 %}selected{% endif %}>August</option>
+                    <option value="9" {% if selected_month == 9 %}selected{% endif %}>September</option>
+                    <option value="10" {% if selected_month == 10 %}selected{% endif %}>October</option>
+                    <option value="11" {% if selected_month == 11 %}selected{% endif %}>November</option>
+                    <option value="12" {% if selected_month == 12 %}selected{% endif %}>December</option>
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label for="year" class="form-label">Year</label>
+                <select class="form-select" id="year" name="year">
+                    {% for year in years %}
+                    <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Apply</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Summary card -->
+    <div class="summary-card">
+        <h3>{{ month_name }} {{ selected_year }} Summary</h3>
+        <p class="fs-4">Total Expenses: <strong>₹{{ "{:,.2f}".format(monthly_total) }}</strong></p>
+    </div>
+    
+    <!-- Pie Chart Section - Full Width -->
+    <div class="chart-container">
+        <h4 class="text-center mb-3">Category-wise Expenses</h4>
+        <img src="{{ url_for('static', filename=pie_chart_filename) }}?{{ range(1, 10000) | random }}" 
+             alt="Category Expenses Pie Chart" 
+             class="chart-image">
+        
+        {% if monthly_total == 0 %}
+        <div class="alert alert-info mt-3">
+            No expense data available for this month.
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Line Chart Section - Full Width (Below Pie Chart) -->
+    <div class="chart-container">
+        <h4 class="text-center mb-3">Monthly Expenses Trend ({{ selected_year }})</h4>
+        <img src="{{ url_for('static', filename=line_chart_filename) }}?{{ range(1, 10000) | random }}" 
+             alt="Monthly Expenses Line Chart" 
+             class="chart-image">
+    </div>
+</div>
+{% endblock %}
